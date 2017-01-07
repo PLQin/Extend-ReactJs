@@ -2,39 +2,73 @@
 <html>
 	<head>
     	<meta charset = "UTF-8">
-    	<title>React App</title>
-		<script src="../lib/react.js"></script>
-		<script src="../lib/JSXTransformer.js"></script> 
+    	<title>IndexReact</title>
 
+		<script src="../lib/react.js"></script>
+		<script src="../lib/JSXTransformer.js"></script>
+		<!-- <script src="../lib/browser.min.js"></script>  -->
     	<!-- <script type="text/jsx" src="App.jsx"></script> -->
 	</head>
-
 	<body>
 		<div id = "app"></div>
 
-	    <script type="text/jsx">
-	    	var HellowDemo = React.createClass({
-	    		TextCenter : {
-	    			textAlign : "center"
-	    		},
-	    		DataArr : [
-    				<h1>菜鸟教程</h1>,
-  					<h2>学的不仅是技术，更是梦想！</h2>,
-    			],
-		    	render  : function(){
+	    <script type="text/jsx" >
+			// 复合组件
+			// HellowDemo 组件使用了 Name 和 Link 组件来输出对应的信息，也就是说 HellowDemo 拥有 Name 和 Link 的实例。
+    		var HellowDemo = React.createClass({
+				TextCenter : {
+					textAlign : "center"
+				},
+				DataArr : [
+					<h1>菜鸟教程</h1>,
+					<h2>学的不仅是技术，更是梦想！</h2>,
+				],
+				render  : function(){
 					return (
 						<div style={this.TextCenter}>
-					    	<h1>Hello World!!!</h1>
-					    	<h3>开始学习ReactJS!！！！</h3>
-					    	<div>{this.DataArr}</div>
+							<h1>Hello World!!!</h1>
+							<h3>开始学习ReactJS!！！！</h3>
+							<h1>{1+1}this</h1>
+							<div>{this.DataArr}</div>
+							<Demo1 />
+							<Name name={this.props.name} /> {/*是一个对象,一个实例*/}
+							<Link site={this.props.site} />
 						</div>
 					);
-			    }
-		    }) ;
+				}
+			}) ;
+
+            // 组件1
+            var Demo1 = React.createClass({
+                render : function () {
+                    return <div>我是demo,我是组件</div>
+                }
+            });
+
+            // 额外的test的组件
+			//小小小标题
+			var Name = React.createClass({
+			   render : function () {
+				   return (
+				       <h1>{this.props.name}</h1>
+				   )
+               }
+			});
+			//跳转链接a标签
+			var Link = React.createClass({
+			   render : function () {
+				   return (
+				       <a href={this.props.site}>{this.props.site}</a>
+				   )
+               }
+			});
+
 			React.render(
-				<HellowDemo/>,
+			    // name 是小小小标题,  site实现跳转链接(并且显示在DOM上)a标签
+				<HellowDemo name="My Family" site="www.baidu.com"/>, // 是一个对象
 				document.getElementById('app')
 			);
+
 	    </script>
       <!-- 设置 div id = "app" 为我们应用的根元素，并引入 index.js 脚本文件。 -->
 	</body>

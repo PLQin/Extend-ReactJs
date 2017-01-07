@@ -44,12 +44,12 @@ JSX 是一个看起来很像 XML 的 JavaScript 语法扩展。
 
 目录：
 	1 虚拟DOM
-	2 JSX：
+	2 JSX：想要引入外部独立的JSX文件, 必须先编译: https://segmentfault.com/q/1010000004388793
 	3 react 组件
 
 
 1 虚拟DOM
-	1 虚拟DOM是React的基石。
+	虚拟DOM是React的基石。
 	why：
 		1 Web应用和网站不同，一个Web应用 中通常会在单页内有大量的DOM操作，而这些DOM操作很慢。
 		2 在React中，应用程序在虚拟DOM上操作，这让React有了优化的机会。简单说， React在每次需要渲染时，会先比较当前DOM内容和待渲染内容的差异， 然后再决定如何最优地更新DOM。这个过程被称为reconciliation。
@@ -60,21 +60,29 @@ JSX 是一个看起来很像 XML 的 JavaScript 语法扩展。
 		1. 搜索DOM树中的script节点，如果其类型为text/jsx则进行后续处理
 		2. 读取script节点的内容，将其转化为JavaScript代码
 		3. 构造一个新的script元素，设置其内容为转化结果代码，并追加到DOM树head元素中
+		4. 想要引入外部独立的JSX文件, 必须先编译: https://segmentfault.com/q/1010000004388793
 	a 独立的jsx文件并在body中引用：    <script type="text/jsx" src="....js"></script>     // text/babel 也可以,推荐babel
 		区别就在于 babel 支持将按照ES6写的代码转成ES5格式的代码，以便让其能在现代浏览器上正常运行;       用jsx， 只能用ES5的语法。
-	b 在 JSX 中使用 JavaScript 表达式。表达式写在花括号 {} 中：
+	b 在 JSX 中使用 JavaScript 表达式。表达式写在花括号 {} 中：// 包括属性啊,变量啊等等
 		<h1>{1+1}</h1>   //输出 <h1>2</h1>
-	c JSX 中不能使用 if else 语句,但是可以使用三元运算符
+	c JSX 中不能使用 if else 语句,但是可以使用三元运算符 !
 	d  React 会在指定元素数字后自动添加 px ：
 		var myStyle = {
 			fontSize: 100,
 			color: '#FF0000'
 		};
-		ReactDOM.render(
+		React.render(
 			<h1 style = {myStyle}>菜鸟教程</h1>,
 			document.getElementById('example')
 		);
 	e 注释需要写在花括号中：{/*注释...*/}
+		ReactDOM.render(
+			<div>
+		    <h1>菜鸟教程</h1>
+		    {/*注释...*/}
+		 	</div>,
+			document.getElementById('example')
+		);
 	f JSX 允许在模板中插入数组，数组会自动展开所有成员：
 		var arr = [
  			<h1>菜鸟教程</h1>,
@@ -84,12 +92,38 @@ JSX 是一个看起来很像 XML 的 JavaScript 语法扩展。
 			<div>{arr}</div>,
 			document.getElementById('example')
 		);
+	g-Notice: 
+		JSX写在html文件内, type类型应为jsx||babel   推荐使用jsx
+		JSX写在外部引用,type类型应为babel
 
 3 react 组件：
+3.1	组件理念:
+		1 创建组件:
+			声明一个对象; 
+			此对象内包含大量的方法和属性(键值对的形式),
+			此对象内创建元素(键值对的形式)并且调用此对象内部创建的方法也可以为元素绑定事件:			
+				rander : function(){
+					return (
+						<div>
+							<button onClick={this.handClick}>显示||隐藏</button>	 // 使用大括号包裹引用的函数
+							<span ref="tip">测试点击</span>
+						</div> /*用div包裹是为了返回一个结果，而不是两个结果 */
+					)
+				}
+		2 组件创建完毕后开始渲染:
+			React.render(组件对象, 需要被组件插入的元素); 
+
+	react渲染html标签和组件:
+		要渲染 HTML 标签，只需在 JSX 里使用小写字母的标签名。
+			var myDivElement = <div className="foo" />;
+			React.render(myDivElement, document.getElementById('example'));
+		要渲染 React 组件，只需创建一个大写字母开头的本地变量:
+			var MyComponent = React.createClass({/*...*/}); // element对象,此对象可以封装任意的方法和样式
+			var myElement = <MyComponent someProperty={true} />;
+			React.render(myElement, document.getElementById('example'));
 
 
-react创建元素并显示：
-/* 
+3.2 react创建元素并显示：
  	语法1 ：React.createElement(type,[props],[children...]) - 在虚拟DOM上创建指定的React元素 ：必选的元素类型；可选的JSON对象；可选的这个元素的子元素(不限)
 	    var demo = React.createElement(
 	            "ul",
@@ -103,6 +137,7 @@ react创建元素并显示：
 		        return <div>Hello Taobao, Hello UED</div>;
 		    }
 		});
+		React.render(Hello, 被插入的元素);
 		可以无限个createClass
 	语法3 : createFactory，通过工厂方法创建React组件实例，在js里要实现工厂方法只需创建一个带type参数的createElement的绑定函数：
 		ReactElement.createFactory = function(type) {
@@ -123,8 +158,78 @@ callback 可选的函数，当渲染完成或更新后被执行
 */
     React.render(element,document.querySelector("#content"));
 
+3.3 复合组件:通过创建多个组件来合成一个组件，即把组件的不同功能点进行分离。
+	1	demo1 :
+		// 复合组件
+    		var HellowDemo = React.createClass({
+				TextCenter : {
+					textAlign : "center"
+				},
+				DataArr : [
+					<h1>菜鸟教程</h1>,
+						<h2>学的不仅是技术，更是梦想！</h2>,
+				],
+				render  : function(){
+					return (
+						<div style={this.TextCenter}>
+							<h1>Hello World!!!</h1>
+							<h3>开始学习ReactJS!！！！</h3>
+							<h1>{1+1}</h1>
+							<div>{this.DataArr}</div>
+							<Demo1/>
+						</div>
+					);
+				}
+			}) ;
 
+            // 组件1
+            var Demo1 = React.createClass({
+                render : function () {
+                    return <div>我是demo,我是组件, 我是帅哥</div>
+                }
+            });
+			React.render(
+				<HellowDemo/>,
+				document.getElementById('app')
+			);
+	2	demo2 : 
+			var WebSite = React.createClass({
+			  render: function() {
+			    return (
+			      <div>
+			        <Name name={this.props.name} />
+			        <Link site={this.props.site} />
+			      </div>
+			    );
+			  }
+			});
+
+			var Name = React.createClass({
+			  render: function() {
+			    return (
+			      <h1>{this.props.name}</h1>
+			    );
+			  }
+			});
+
+			var Link = React.createClass({
+			  render: function() {
+			    return (
+			      <a href={this.props.site}>
+			        {this.props.site}
+			      </a>
+			    );
+			  }
+			});
+
+			React.render(
+			  <WebSite name="菜鸟教程" site=" http://www.runoob.com" />, // WebSite是组件的聚合体
+			  document.getElementById('example')
+			);
+	
 4.1 属性 : props
+	使用props字段访问实例元素的属性。 // 是实例元素! 的属性!
+	例: this.props.on
 
 4.2 内联样式: 
 	语法: return <Element className="" style={{}}></Element>
@@ -275,9 +380,38 @@ DEMO:
 
 
 
+DEMO :
+
+{JSX} >>
+var myOnoff = "on";
+React.render(
+    < EzLampComp onoff={myOnoff} />,
+    document.querySelector("#content")
+);
+
+{JavaScript} >>
+var myOnoff = "on";
+React.render(
+    React.createElement(
+        EzLampComp,
+        {
+            onoff : myOnoff
+        }),
+    document.querySelector("#content")
+);
 
 
 
 
- ?!
+
+
+
+
+
+
+
+
+?!
 	JS  this 指代对象的4种情况
+?! 
+	一个页面只能有一个render?  如果我在作图需要插入新的元素, 如何实现?
