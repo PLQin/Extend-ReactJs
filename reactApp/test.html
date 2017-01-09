@@ -14,12 +14,66 @@
   </head>
   <body>
     <div id="example"></div>
+
     <script type="text/babel">
 
-      ReactDOM.render(
-        <h1 style={{textAlign:"center"}}>Test Hello!</h1>,
+      var LikeButton = React.createClass({  
+        getInitialState: function() {
+          return {
+            liked: false,
+            num : false
+          };
+        },
+        handleClick: function(event) {
+          this.setState({liked: !this.state.liked});{/*setState(currentState) - 设置组件当前状态*/}
+        },
+        setNum : function(event){
+          this.setState({num: !this.state.num});
+        },
+        render: function() {
+          var text = this.state.liked ? '喜欢' : '不喜欢';
+          var num = this.state.liked ? '123' : '321';
+          return (
+            <div>
+              <p onClick={this.handleClick}>
+                你<b>{text}</b>我。点我切换状态。
+              </p>
+            </div>
+          );
+        }
+      });
+      var InputValue = React.createClass({
+        render : function(){
+          return (
+            <p>
+              <input type='text' onChange={this.setNum} value="" /><span style={{color:'red'}}>{num}</span>
+            </p>
+          )
+        }
+      });
+
+
+      React.render(
+        <div>
+          <LikeButton />
+          <InputValue />
+        </div>,
         document.getElementById('example')
       );
     </script>
+
+
+<!-- 
+  React的组件的确引入了状态机的概念，通过将组件划分为不同的状态，使组件具有了一定的记忆能力：
+  state - 组件的状态变量
+    每个React组件实例都有一个state变量，用来保存组件的当前状态。可以在 任何时刻使用this.state读取当前状态。
+  getInitialState() - 设置组件初始状态
+    组件的实现者应当实现一个getInitialState()方法来设置组件的初始状态。 getInitialState()方法必须返回一个JSON对象或空值null， 这意味着即使你只需要一个简单的标志作为状态，比如true或false，也要把它放到JSON对象里。
+  setState(currentState) - 设置组件当前状态
+    尽管可以使用this.state来直接设置组件当前状态，但React要求我们使用 setState()方法来进行状态设置。这是因为，setState()方法会自动 地重新渲染组件，而这通常是我们所期望的。
+
+  参数currentState是一个JSON对象，不必包含状态变量的所有字段，setState()方法会 将这个参数值与当前状态this.sate进行合并，结果作为状态变量的新值。
+
+ -->
   </body>
 </html>
